@@ -7,10 +7,12 @@ class Reservations extends Controller
 
     public $response;
     public $reservationModel;
+    public $userModel;
 
     public function __construct()
     {
         $this->reservationModel = $this->model("Reservation");
+        $this->userModel = $this->model("User");
     }
 
     public function index()
@@ -21,11 +23,15 @@ class Reservations extends Controller
     {
         $this->response = [];
         $data = json_decode(file_get_contents("php://input"));
-
+        $user = $this->userModel->findUserByEmail($data->email);
         if (!empty($data->date) && !empty($data->time)) {
             $uniqueKey = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
             $uniqueKey  = implode("-", str_split($uniqueKey, 5));
-            $this->reservationModel->key = $uniqueKey;
+            if ($user) {
+                $this->reservationModel->key = $user->reservation_key;
+            } else {
+                $this->reservationModel->key = $uniqueKey;
+            }
             $this->reservationModel->date = $data->date;
             $this->reservationModel->time = $data->time;
             $info = [
@@ -34,6 +40,7 @@ class Reservations extends Controller
                 "email" => $data->email,
                 "role" => 1,
             ];
+
             //die(print_r($data));
             $result = $this->reservationModel->add($info);
 
