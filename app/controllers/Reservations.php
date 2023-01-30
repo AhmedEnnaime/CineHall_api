@@ -23,25 +23,19 @@ class Reservations extends Controller
     {
         $this->response = [];
         $data = json_decode(file_get_contents("php://input"));
-        $user = $this->userModel->findUserByEmail($data->email);
+
         if (!empty($data->date) && !empty($data->time)) {
             $uniqueKey = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
             $uniqueKey  = implode("-", str_split($uniqueKey, 5));
-            if ($user) {
-                $this->reservationModel->key = $user->reservation_key;
-            } else {
-                $this->reservationModel->key = $uniqueKey;
-            }
             $this->reservationModel->date = $data->date;
             $this->reservationModel->time = $data->time;
             $info = [
                 "fname" => $data->fname,
                 "lname" => $data->lname,
                 "email" => $data->email,
+                "key" => $uniqueKey,
                 "role" => 1,
             ];
-
-            //die(print_r($data));
             $result = $this->reservationModel->add($info);
 
             if ($result) {

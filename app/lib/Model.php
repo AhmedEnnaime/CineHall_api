@@ -59,4 +59,21 @@ class Model
             echo $ex->getMessage();
         }
     }
+
+    public function findUserByEmail($email)
+    {
+        try {
+            $this->db->query("SELECT * FROM users WHERE email = :email");
+            $this->db->bind(':email', $email);
+            $row = $this->db->single();
+
+            if ($this->db->rowCount() > 0) {
+                return $row;
+            } else {
+                return false;
+            }
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

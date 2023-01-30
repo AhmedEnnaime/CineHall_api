@@ -7,9 +7,9 @@ class Reservation extends Model
 
     // object properties
     public $id;
-    public $key;
     public $date;
     public $time;
+    public $user_key;
 
     public function __construct()
     {
@@ -19,36 +19,56 @@ class Reservation extends Model
     public function add($data)
     {
         try {
-            $query = "INSERT INTO " . $this->table . " (key, date, time) VALUES (:key, :date, :time)";
-            $this->db->query($query);
+            $user = $this->findUserByEmail($data["email"]);
 
-            // sanitize
-            $this->key = htmlspecialchars(strip_tags($this->key));
-            $this->date = htmlspecialchars(strip_tags($this->date));
-            $this->time = htmlspecialchars(strip_tags($this->time));
+            if (!$user) {
 
-            // bind values
-            $this->db->bind(":key", $this->key);
-            $this->db->bind(":date", $this->date);
-            $this->db->bind(":time", $this->time);
+                $this->db->query("INSERT INTO users (fname,lname,email,role,key) VALUES (:fname,:lname,:email,:role,:key)");
+                $this->db->bind(":fname", $data["fname"]);
+                $this->db->bind(":lname", $data["lname"]);
+                $this->db->bind(":email", $data["email"]);
+                $this->db->bind(":key", $data["key"]);
+                $this->db->bind(":role", $data["role"]);
+                if ($this->db->execute()) {
+                    $this->db->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+                    $row = $this->db->single();
 
-            if ($this->db->execute()) {
-                $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
-                $row = $this->db->single();
+                    if ($row) {
 
-                if ($row) {
-                    $this->db->query("INSERT INTO users (fname,lname,email,role,reservation_key) VALUES (:fname,:lname,:email,:role,:reservation_key)");
-                    $this->db->bind(":fname", $data["fname"]);
-                    $this->db->bind(":lname", $data["lname"]);
-                    $this->db->bind(":email", $data["email"]);
-                    $this->db->bind(":role", $data["role"]);
-                    $this->db->bind(":reservation_key", $row->key);
+                        $query = "INSERT INTO " . $this->table . " (date, time,user_key) VALUES (:date, :time,:user_key)";
+                        $this->db->query($query);
 
-                    if ($this->db->execute()) {
-                        return true;
-                    } else {
-                        return false;
+                        // sanitize
+                        $this->date = htmlspecialchars(strip_tags($this->date));
+                        $this->time = htmlspecialchars(strip_tags($this->time));
+
+                        // bind values
+                        $this->db->bind(":date", $this->date);
+                        $this->db->bind(":time", $this->time);
+                        $this->db->bind(":user_key", $row->key);
+                        if ($this->db->execute()) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
+                }
+            } else {
+                $query = "INSERT INTO " . $this->table . " (date, time,user_key) VALUES (:date, :time,:user_key)";
+                $this->db->query($query);
+
+                // sanitize
+                $this->date = htmlspecialchars(strip_tags($this->date));
+                $this->time = htmlspecialchars(strip_tags($this->time));
+
+                // bind values
+                $this->db->bind(":date", $this->date);
+                $this->db->bind(":time", $this->time);
+                $this->db->bind(":user_key", $user->key);
+                if ($this->db->execute()) {
+                    return true;
+                } else {
+                    return false;
                 }
             }
         } catch (PDOException $ex) {

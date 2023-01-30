@@ -19,19 +19,7 @@ class User extends Model
 
     public function findUserByEmail($email)
     {
-        try {
-            $this->db->query("SELECT * FROM " . $this->table . " WHERE email = :email");
-            $this->db->bind(':email', $email);
-            $row = $this->db->single();
-
-            if ($this->db->rowCount() > 0) {
-                return $row;
-            } else {
-                return false;
-            }
-        } catch (PDOException $ex) {
-            echo $ex->getMessage();
-        }
+        return $this->findUserByEmail($email);
     }
 
     public function login()
