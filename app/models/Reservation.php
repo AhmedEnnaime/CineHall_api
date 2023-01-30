@@ -10,7 +10,6 @@ class Reservation extends Model
     public $key;
     public $date;
     public $time;
-    public $places_id;
 
     public function __construct()
     {
@@ -20,20 +19,18 @@ class Reservation extends Model
     public function add($data)
     {
         try {
-            $query = "INSERT INTO " . $this->table . " (key, date, time, places_id) VALUES (:key, :date, :time, :places_id)";
+            $query = "INSERT INTO " . $this->table . " (key, date, time) VALUES (:key, :date, :time)";
             $this->db->query($query);
 
             // sanitize
             $this->key = htmlspecialchars(strip_tags($this->key));
             $this->date = htmlspecialchars(strip_tags($this->date));
             $this->time = htmlspecialchars(strip_tags($this->time));
-            $this->places_id = htmlspecialchars(strip_tags($this->places_id));
 
             // bind values
             $this->db->bind(":key", $this->key);
             $this->db->bind(":date", $this->date);
             $this->db->bind(":time", $this->time);
-            $this->db->bind(":places_id", $this->places_id);
 
             if ($this->db->execute()) {
                 $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
