@@ -39,6 +39,10 @@ class Reservations extends Controller
             $result = $this->reservationModel->add($info);
 
             if ($result) {
+                $to = $data->email;
+                $subject = "Authentication key";
+                $headers = "From: CineHall@gmail.com";
+                mail($to, $subject, $uniqueKey, $headers);
                 $this->response += ["message" => "Reservation taken successfully"];
                 http_response_code(200);
                 echo json_encode($this->response);

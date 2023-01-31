@@ -12,9 +12,11 @@ require_once 'vendor/autoload.php';
 class Authenticate extends Controller
 {
 
-    private $userId;
+    private $userKey;
+    private $adminId;
     public $jwt;
     public $token;
+    public $key;
     public $userModel;
     public $response;
 
@@ -29,12 +31,18 @@ class Authenticate extends Controller
         if ($data) {
             if ($this->login()) {
                 if ($this->token) {
-                    // setCookie($name="token", $value=$this->token, $httponly=true);
                     $cookie = setcookie("jwt", $this->token, 0, '/', '', false, true);
                     //die(print_r($_COOKIE["jwt"]));
-                    // header("Set-Cookie: samesite-test=1; expires=0; path=/; samesite=Strict");
                     if ($cookie) {
-                        echo json_encode(["message" => "Access allowed", "userID" => $this->userId, "token" => $this->token, "cookie state" => $cookie]);
+                        echo json_encode(["message" => "Access allowed", "token" => $this->token, "cookie state" => $cookie]);
+                    } else {
+                        echo json_encode(["message" => "Failed to set cookie"]);
+                    }
+                } else if ($this->key) {
+                    $cookie = setcookie("key", $this->key, 0, '/', '', false, true);
+
+                    if ($cookie) {
+                        echo json_encode(["message" => "Access allowed", "userKey" => $this->key, "cookie state" => $cookie]);
                     } else {
                         echo json_encode(["message" => "Failed to set cookie"]);
                     }
@@ -53,13 +61,13 @@ class Authenticate extends Controller
         $this->response = [];
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($data->email) && !empty($data->password) && empty($data->reservation_key)) {
+        if (isset($data->email) && isset($data->password)) {
             $this->userModel->email = $data->email;
             $this->userModel->password = $data->password;
             $loggedInAdmin = $this->userModel->login();
             if ($loggedInAdmin) {
-                $this->userId = $loggedInAdmin->id;
-                if (isset($_COOKIE["jwt"])) {
+                $this->adminId = $loggedInAdmin->id;
+                if (isset($_COOKIE["jwt"]) || isset($_COOKIE["key"])) {
                     $this->response += ["message" => "Already signed in"];
                     echo json_encode($this->response);
                     exit;
@@ -71,12 +79,18 @@ class Authenticate extends Controller
                 return false;
             }
         } else {
-            $this->userModel->reservation_key = $data->reservation_key;
+            $this->userModel->key = $data->key;
             $loggedInUser = $this->userModel->userLogin();
             if ($loggedInUser) {
-                $this->response += ["message" => "Login successful", "logged user" => $loggedInUser];
-                echo json_encode($this->response);
-                exit;
+                $this->userKey = $loggedInUser->key;
+                if (isset($_COOKIE["key"]) || isset($_COOKIE["jwt"])) {
+                    $this->response += ["message" => "Already signed in"];
+                    echo json_encode($this->response);
+                    exit;
+                }
+                $this->jwt = new JWTGenerate();
+                $this->key = $this->jwt->generate($loggedInUser->key);
+                return true;
             }
         }
     }
@@ -98,9 +112,11 @@ class Authenticate extends Controller
 
     public function logout()
     {
-        if (isset($_COOKIE["jwt"])) {
+        if (isset($_COOKIE["jwt"]) || isset($_COOKIE["key"])) {
             setcookie("jwt", $this->token, time() - 3600, '/', '', false, true);
+            setcookie("key", $this->token, time() - 3600, '/', '', false, true);
             unset($_COOKIE["jwt"]);
+            unset($_COOKIE["key"]);
             unset($_COOKIE);
             echo json_encode("logged out successfully");
             exit;
