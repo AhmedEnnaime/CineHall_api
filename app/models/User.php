@@ -65,4 +65,23 @@ class User extends Model
             echo $ex->getMessage();
         }
     }
+
+    public function update($id)
+    {
+        try {
+            $query = "UPDATE " . $this->table . " SET fname=:fname,lname=:lname,email=:email WHERE id = :id";
+            $this->db->query($query);
+            $this->db->bind(":fname", $this->fname);
+            $this->db->bind(":lname", $this->lname);
+            $this->db->bind(":email", $this->email);
+            $this->db->bind(":id", $id);
+            if ($this->db->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

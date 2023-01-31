@@ -38,7 +38,7 @@ class Halls extends Controller
             $result = $this->hallModel->createHall();
             if ($result) {
                 $this->response += ["message" => "Hall created successfully"];
-                http_response_code(200);
+                http_response_code(201);
                 echo json_encode($this->response);
                 exit;
             } else {

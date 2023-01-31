@@ -40,7 +40,7 @@ class Films extends Controller
             $result = $this->filmModel->addFilm();
             if ($result) {
                 $this->response += ["message" => "Film added successfully"];
-                http_response_code(200);
+                http_response_code(201);
                 echo json_encode($this->response);
                 exit;
             } else {
