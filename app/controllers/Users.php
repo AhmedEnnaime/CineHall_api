@@ -1,4 +1,5 @@
 <?php
+require_once "../app/controllers/headers.php";
 
 class Users extends Controller
 {

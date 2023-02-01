@@ -77,7 +77,7 @@ class Reservations extends Controller
     public function getReservationsCount()
     {
         $this->response = [];
-        $result = $this->reservationModel->geReservationsCount();
+        $result = $this->reservationModel->getReservationsCount();
 
         if ($result) {
             $this->response += ["Reservations" => $result];

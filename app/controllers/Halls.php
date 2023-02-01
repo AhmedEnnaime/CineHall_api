@@ -1,4 +1,5 @@
 <?php
+require_once "../app/controllers/headers.php";
 
 class Halls extends Controller
 {

@@ -1,4 +1,5 @@
 <?php
+require_once "../app/controllers/headers.php";
 
 class Films extends Controller
 {
@@ -64,6 +65,24 @@ class Films extends Controller
             exit;
         } else {
             $this->response += ["message" => "Failed to delete film"];
+            http_response_code(503);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
+
+    public function getFilmsCount()
+    {
+        $this->response = [];
+        $result = $this->filmModel->getFilmsCount();
+
+        if ($result) {
+            $this->response += ["Films" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Failed to get films count"];
             http_response_code(503);
             echo json_encode($this->response);
             exit;

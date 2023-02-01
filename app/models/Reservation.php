@@ -81,7 +81,7 @@ class Reservation extends Model
         return $this->getTable();
     }
 
-    public function geReservationsCount()
+    public function getReservationsCount()
     {
         return $this->getCount();
     }

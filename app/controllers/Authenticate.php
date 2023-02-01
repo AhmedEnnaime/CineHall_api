@@ -1,10 +1,6 @@
 <?php
 
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Content-Type: application/json");
-header('Access-Control-Allow-Credentials: true');
-header("Access-Control-Allow-Methods: GET, POST, UPDATE");
-header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Access-Control-Allow-Credentials, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With");
+require_once "../app/controllers/headers.php";
 
 require_once "../app/generate_jwt.php";
 require_once 'vendor/autoload.php';

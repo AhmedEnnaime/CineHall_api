@@ -45,4 +45,9 @@ class Film extends Model
     {
         return $this->delete($id);
     }
+
+    public function getFilmsCount()
+    {
+        return $this->getCount();
+    }
 }
