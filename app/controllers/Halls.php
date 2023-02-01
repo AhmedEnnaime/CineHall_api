@@ -67,4 +67,22 @@ class Halls extends Controller
             exit;
         }
     }
+
+    public function getHallsCount()
+    {
+        $this->response = [];
+        $result = $this->hallModel->getHallsCount();
+
+        if ($result) {
+            $this->response += ["Halls" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Failed to get halls count"];
+            http_response_code(503);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }

@@ -53,4 +53,40 @@ class Users extends Controller
             }
         }
     }
+
+    public function getUsersCount()
+    {
+        $this->response = [];
+        $result = $this->userModel->getUsersCount();
+
+        if ($result) {
+            $this->response += ["Users" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Failed to get users count"];
+            http_response_code(503);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
+
+    public function deleteUsers($id)
+    {
+        $this->response = [];
+        $result = $this->userModel->deleteUser($id);
+
+        if ($result) {
+            $this->response += ["message" => "User deleted successfully"];
+            http_response_code(202);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Failed to delete user"];
+            http_response_code(503);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }

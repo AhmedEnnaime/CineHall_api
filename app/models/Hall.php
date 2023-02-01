@@ -41,4 +41,9 @@ class Hall extends Model
     {
         return $this->delete($id);
     }
+
+    public function getHallsCount()
+    {
+        return $this->getCount();
+    }
 }

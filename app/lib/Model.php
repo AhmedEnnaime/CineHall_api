@@ -76,4 +76,16 @@ class Model
             echo $ex->getMessage();
         }
     }
+
+    public function getCount()
+    {
+        try {
+            $query = "SELECT COUNT(*) as total FROM $this->table";
+            $this->db->query($query);
+            $row = $this->db->single();
+            return $row;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

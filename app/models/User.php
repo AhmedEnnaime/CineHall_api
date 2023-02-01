@@ -84,4 +84,14 @@ class User extends Model
             echo $ex->getMessage();
         }
     }
+
+    public function getUsersCount()
+    {
+        return $this->getCount();
+    }
+
+    public function deleteUser($id)
+    {
+        return $this->delete($id);
+    }
 }
