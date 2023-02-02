@@ -39,7 +39,6 @@ class Films extends Controller
             $this->filmModel->hall_id = $data->hall_id;
             $this->filmModel->title = $data->title;
             $result = $this->filmModel->addFilm();
-            //die(print_r($result));
             if (!$result) {
                 $this->response += ["message" => "Not empty"];
                 http_response_code(406);
@@ -90,6 +89,24 @@ class Films extends Controller
         } else {
             $this->response += ["message" => "Failed to get films count"];
             http_response_code(503);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
+
+    public function getFilmById($id)
+    {
+        $this->response = [];
+        $result = $this->filmModel->getFilmById($id);
+
+        if ($result) {
+            $this->response += ["Film" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Film not found"];
+            http_response_code(404);
             echo json_encode($this->response);
             exit;
         }

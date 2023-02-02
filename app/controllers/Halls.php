@@ -86,4 +86,21 @@ class Halls extends Controller
             exit;
         }
     }
+
+    public function getHallById($id)
+    {
+        $this->response = [];
+        $result = $this->hallModel->getHallById($id);
+        if ($result) {
+            $this->response += ["Hall" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Hall not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }

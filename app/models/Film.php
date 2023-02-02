@@ -62,4 +62,9 @@ class Film extends Model
     {
         return $this->getCount();
     }
+
+    public function getFilmById($id)
+    {
+        return $this->getElementById($id);
+    }
 }

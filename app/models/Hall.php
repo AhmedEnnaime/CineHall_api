@@ -19,6 +19,11 @@ class Hall extends Model
         return $this->getTable();
     }
 
+    public function getHallById($id)
+    {
+        return $this->getElementById($id);
+    }
+
     public function createHall()
     {
 

@@ -85,4 +85,9 @@ class Reservation extends Model
     {
         return $this->getCount();
     }
+
+    public function getReservationById($id)
+    {
+        return $this->getElementById($id);
+    }
 }
