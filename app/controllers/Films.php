@@ -39,7 +39,13 @@ class Films extends Controller
             $this->filmModel->hall_id = $data->hall_id;
             $this->filmModel->title = $data->title;
             $result = $this->filmModel->addFilm();
-            if ($result) {
+            //die(print_r($result));
+            if (!$result) {
+                $this->response += ["message" => "Not empty"];
+                http_response_code(406);
+                echo json_encode($this->response);
+                exit;
+            } else if ($result) {
                 $this->response += ["message" => "Film added successfully"];
                 http_response_code(201);
                 echo json_encode($this->response);
