@@ -103,4 +103,24 @@ class Halls extends Controller
             exit;
         }
     }
+
+    public function updateHall($id)
+    {
+        $this->response = [];
+        $data = json_decode(file_get_contents("php://input"));
+        $this->hallModel->name = $data->name;
+        $this->hallModel->capacity = $data->capacity;
+        $result = $this->hallModel->updateHall($id);
+        if ($result) {
+            $this->response += ["message" => "Hall updated successfully"];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Hall not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }

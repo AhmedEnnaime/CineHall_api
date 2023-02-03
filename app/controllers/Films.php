@@ -111,4 +111,26 @@ class Films extends Controller
             exit;
         }
     }
+
+    public function updateFilm($id)
+    {
+        $this->response = [];
+        $data = json_decode(file_get_contents("php://input"));
+        $this->filmModel->title = $data->title;
+        $this->filmModel->date = $data->date;
+        $this->filmModel->time = $data->time;
+        $this->filmModel->hall_id = $data->hall_id;
+        $result = $this->filmModel->updateFilm($id);
+        if ($result) {
+            $this->response += ["message" => "Film updated successfully"];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Film not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }

@@ -51,4 +51,22 @@ class Hall extends Model
     {
         return $this->getCount();
     }
+
+    public function updateHall($id)
+    {
+        try {
+            $query = "UPDATE " . $this->table . " SET name=:name,capacity=:capacity WHERE id =:id";
+            $this->db->query($query);
+            $this->db->bind(":name", $this->name);
+            $this->db->bind(":capacity", $this->capacity);
+            $this->db->bind(":id", $id);
+            if ($this->db->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

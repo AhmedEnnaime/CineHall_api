@@ -67,4 +67,24 @@ class Film extends Model
     {
         return $this->getElementById($id);
     }
+
+    public function updateFilm($id)
+    {
+        try {
+            $query = "UPDATE " . $this->table . " SET title=:title,date=:date,time=:time,hall_id=:hall_id WHERE id =:id";
+            $this->db->query($query);
+            $this->db->bind(":title", $this->title);
+            $this->db->bind(":date", $this->date);
+            $this->db->bind(":time", $this->time);
+            $this->db->bind(":hall_id", $this->hall_id);
+            $this->db->bind(":id", $id);
+            if ($this->db->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

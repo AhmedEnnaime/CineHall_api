@@ -90,4 +90,14 @@ class Reservation extends Model
     {
         return $this->getElementById($id);
     }
+
+    public function getUserReservations($user_key)
+    {
+        try {
+            $query = "";
+            $this->db->query($query);
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }
