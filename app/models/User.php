@@ -28,8 +28,12 @@ class User extends Model
             $this->db->query("SELECT * FROM " . $this->table . " WHERE email = :email AND role = 0");
             $this->db->bind(':email', $this->email);
             $row = $this->db->single();
-            if ($this->password == $row->password) {
-                return $row;
+            if ($row) {
+                if ($this->password == $row->password) {
+                    return $row;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
