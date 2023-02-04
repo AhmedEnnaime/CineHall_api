@@ -7,16 +7,16 @@ class Reservation extends Model
 
     // object properties
     public $id;
-    public $date;
-    public $time;
+    public $film_id;
     public $user_key;
+    public $num;
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function add($data)
+    public function add($data, $film_id)
     {
         try {
             $user = $this->findUserByEmail($data["email"]);
@@ -35,38 +35,49 @@ class Reservation extends Model
 
                     if ($row) {
 
-                        $query = "INSERT INTO " . $this->table . " (date, time,user_key) VALUES (:date, :time,:user_key)";
+                        $query = "INSERT INTO " . $this->table . " (user_key,film_id) VALUES (:user_key,:film_id)";
                         $this->db->query($query);
-
-                        // sanitize
-                        $this->date = htmlspecialchars(strip_tags($this->date));
-                        $this->time = htmlspecialchars(strip_tags($this->time));
-
                         // bind values
-                        $this->db->bind(":date", $this->date);
-                        $this->db->bind(":time", $this->time);
+
                         $this->db->bind(":user_key", $row->key);
+                        $this->db->bind(":film_id", $film_id);
                         if ($this->db->execute()) {
-                            return true;
+                            $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
+                            $record = $this->db->single();
+                            if ($record) {
+                                $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
+                                $this->db->bind(":num", $this->num);
+                                $this->db->bind(":reservation_id", $record->id);
+                                if ($this->db->execute()) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }
                         } else {
                             return false;
                         }
                     }
                 }
             } else {
-                $query = "INSERT INTO " . $this->table . " (date, time,user_key) VALUES (:date, :time,:user_key)";
+                $query = "INSERT INTO " . $this->table . " (user_key,film_id) VALUES (:user_key,:film_id)";
                 $this->db->query($query);
-
-                // sanitize
-                $this->date = htmlspecialchars(strip_tags($this->date));
-                $this->time = htmlspecialchars(strip_tags($this->time));
-
                 // bind values
-                $this->db->bind(":date", $this->date);
-                $this->db->bind(":time", $this->time);
+                $this->db->bind(":film_id", $film_id);
                 $this->db->bind(":user_key", $user->key);
                 if ($this->db->execute()) {
-                    return true;
+                    $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
+                    $record = $this->db->single();
+                    if ($record) {
+                        $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
+                        $this->db->bind(":num", $this->num);
+                        $this->db->bind(":reservation_id", $record->id);
+                        if ($this->db->execute()) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
                 } else {
                     return false;
                 }

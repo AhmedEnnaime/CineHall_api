@@ -19,40 +19,36 @@ class Reservations extends Controller
     {
     }
 
-    public function takeReservation()
+    public function takeReservation($film_id)
     {
         $this->response = [];
         $data = json_decode(file_get_contents("php://input"));
+        $uniqueKey = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
+        $uniqueKey  = implode("-", str_split($uniqueKey, 5));
+        $this->reservationModel->num = $data->num;
+        $info = [
+            "fname" => $data->fname,
+            "lname" => $data->lname,
+            "email" => $data->email,
+            "key" => $uniqueKey,
+            "role" => 1,
+        ];
+        $result = $this->reservationModel->add($info, $film_id);
 
-        if (!empty($data->date) && !empty($data->time)) {
-            $uniqueKey = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
-            $uniqueKey  = implode("-", str_split($uniqueKey, 5));
-            $this->reservationModel->date = $data->date;
-            $this->reservationModel->time = $data->time;
-            $info = [
-                "fname" => $data->fname,
-                "lname" => $data->lname,
-                "email" => $data->email,
-                "key" => $uniqueKey,
-                "role" => 1,
-            ];
-            $result = $this->reservationModel->add($info);
-
-            if ($result) {
-                $to = $data->email;
-                $subject = "Authentication key";
-                $headers = "From: CineHall@gmail.com";
-                mail($to, $subject, $uniqueKey, $headers);
-                $this->response += ["message" => "Reservation taken successfully"];
-                http_response_code(200);
-                echo json_encode($this->response);
-                exit;
-            } else {
-                $this->response += ["message" => "Failed to take reservation"];
-                http_response_code(503);
-                echo json_encode($this->response);
-                exit;
-            }
+        if ($result) {
+            $to = $data->email;
+            $subject = "Authentication key";
+            $headers = "From: CineHall@gmail.com";
+            mail($to, $subject, $uniqueKey, $headers);
+            $this->response += ["message" => "Reservation taken successfully"];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Failed to take reservation"];
+            http_response_code(503);
+            echo json_encode($this->response);
+            exit;
         }
     }
 

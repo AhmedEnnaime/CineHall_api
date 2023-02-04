@@ -98,4 +98,17 @@ class User extends Model
     {
         return $this->delete($id);
     }
+
+    public function getLoggedInAdmin($id)
+    {
+        try {
+            $query = "SELECT * FROM " . $this->table . " WHERE id=:id";
+            $this->db->query($query);
+            $this->db->bind(":id", $id);
+            $row = $this->db->single();
+            return $row;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
 }

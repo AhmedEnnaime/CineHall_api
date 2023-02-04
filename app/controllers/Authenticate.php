@@ -30,7 +30,7 @@ class Authenticate extends Controller
                     $cookie = setcookie("jwt", $this->token, 0, '/', '', false, true);
                     //die(print_r($_COOKIE["jwt"]));
                     if ($cookie) {
-                        echo json_encode(["message" => "Access allowed", "token" => $this->token, "cookie state" => $cookie]);
+                        echo json_encode(["message" => "Access allowed", "token" => $this->token, "adminId" => $this->adminId, "cookie state" => $cookie]);
                     } else {
                         echo json_encode(["message" => "Failed to set cookie"]);
                     }
