@@ -16,10 +16,38 @@ class Reservation extends Model
         parent::__construct();
     }
 
+    public function getReservations()
+    {
+        try {
+            $query = "SELECT r.id as reservation_id,r.user_key as user_key, r.film_id as film_id,
+                        f.title as film_title,f.date as reservation_date,f.time as reservation_time,
+                        h.id as hall_id,h.name as hall_name,s.num as seat_num,
+                        u.fname as first_name, u.lname as last_name FROM reservations r
+                        JOIN films f ON r.film_id = f.id
+                        JOIN halls h ON f.hall_id = h.id
+                        JOIN seats s ON s.reservation_id = r.id
+                        JOIN users u ON u.key = r.user_key;";
+            $this->db->query($query);
+            $result = $this->db->resultSet();
+            return $result;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
+
     public function add($data, $film_id)
     {
         try {
+            $reservations = $this->getReservations();
+
             $user = $this->findUserByEmail($data["email"]);
+            foreach ($reservations as $reservation) {
+                foreach ($this->num as $n) {
+                    if ($reservation->film_id == $film_id && $reservation->seat_num == $n) {
+                        return false;
+                    }
+                }
+            }
 
             if (!$user) {
 
@@ -38,21 +66,19 @@ class Reservation extends Model
                         $query = "INSERT INTO " . $this->table . " (user_key,film_id) VALUES (:user_key,:film_id)";
                         $this->db->query($query);
                         // bind values
-
                         $this->db->bind(":user_key", $row->key);
                         $this->db->bind(":film_id", $film_id);
                         if ($this->db->execute()) {
                             $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
                             $record = $this->db->single();
                             if ($record) {
-                                $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
-                                $this->db->bind(":num", $this->num);
-                                $this->db->bind(":reservation_id", $record->id);
-                                if ($this->db->execute()) {
-                                    return true;
-                                } else {
-                                    return false;
+                                foreach ($this->num as $n) {
+                                    $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
+                                    $this->db->bind(":num", $n);
+                                    $this->db->bind(":reservation_id", $record->id);
+                                    $this->db->execute();
                                 }
+                                return true;
                             }
                         } else {
                             return false;
@@ -87,11 +113,6 @@ class Reservation extends Model
         }
     }
 
-    public function getReservations()
-    {
-        return $this->getTable();
-    }
-
     public function getReservationsCount()
     {
         return $this->getCount();
@@ -101,6 +122,8 @@ class Reservation extends Model
     {
         return $this->getElementById($id);
     }
+
+
 
     public function getUserReservations($user_key)
     {

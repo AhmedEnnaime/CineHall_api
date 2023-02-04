@@ -45,8 +45,8 @@ class Reservations extends Controller
             echo json_encode($this->response);
             exit;
         } else {
-            $this->response += ["message" => "Failed to take reservation"];
-            http_response_code(503);
+            $this->response += ["message" => "Seat already taken"];
+            http_response_code(404);
             echo json_encode($this->response);
             exit;
         }
