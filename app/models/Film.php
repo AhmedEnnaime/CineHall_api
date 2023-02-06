@@ -65,7 +65,15 @@ class Film extends Model
 
     public function getFilmById($id)
     {
-        return $this->getElementById($id);
+        try {
+            $query = "SELECT f.*,h.name as hall FROM films f JOIN halls h ON f.hall_id = h.id WHERE f.id = :id";
+            $this->db->query($query);
+            $this->db->bind(":id", $id);
+            $row = $this->db->single();
+            return $row;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
     }
 
     public function updateFilm($id)
