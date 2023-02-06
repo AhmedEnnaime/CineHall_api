@@ -95,14 +95,13 @@ class Reservation extends Model
                     $this->db->query("SELECT * FROM " . $this->table . " ORDER BY id DESC LIMIT 1");
                     $record = $this->db->single();
                     if ($record) {
-                        $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
-                        $this->db->bind(":num", $this->num);
-                        $this->db->bind(":reservation_id", $record->id);
-                        if ($this->db->execute()) {
-                            return true;
-                        } else {
-                            return false;
+                        foreach ($this->num as $n) {
+                            $this->db->query("INSERT INTO seats (num,reservation_id) VALUES (:num,:reservation_id)");
+                            $this->db->bind(":num", $n);
+                            $this->db->bind(":reservation_id", $record->id);
+                            $this->db->execute();
                         }
+                        return true;
                     }
                 } else {
                     return false;
