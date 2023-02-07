@@ -17,6 +17,20 @@ class Reservations extends Controller
 
     public function index()
     {
+        $this->response = [];
+        $result = $this->reservationModel->getAllReservations();
+
+        if ($result) {
+            $this->response += ["Reservations" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Reservations not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
     }
 
     public function takeReservation($film_id)
@@ -52,24 +66,6 @@ class Reservations extends Controller
         }
     }
 
-    public function getReservations()
-    {
-        $this->response = [];
-        $result = $this->reservationModel->getReservations();
-
-        if ($result) {
-            $this->response += ["Reservations" => $result];
-            http_response_code(200);
-            echo json_encode($this->response);
-            exit;
-        } else {
-            $this->response += ["message" => "Reservations not found"];
-            http_response_code(404);
-            echo json_encode($this->response);
-            exit;
-        }
-    }
-
     public function getReservationsCount()
     {
         $this->response = [];
@@ -95,6 +91,23 @@ class Reservations extends Controller
         if ($result) {
             $this->response += ["Reservation" => $result];
             http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Reservation not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
+
+    public function cancelReservation($id)
+    {
+        $this->response = [];
+        $result = $this->reservationModel->deleteReservation($id);
+        if ($result) {
+            $this->response += ["message" => "Reservation deleted successfully"];
+            http_response_code(202);
             echo json_encode($this->response);
             exit;
         } else {

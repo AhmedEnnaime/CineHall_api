@@ -19,14 +19,34 @@ class Reservation extends Model
     public function getReservations()
     {
         try {
-            $query = "SELECT r.id as reservation_id,r.user_key as user_key, r.film_id as film_id,
+            $query = "SELECT r.id,r.user_key as user_key, r.film_id as film_id,
                         f.title as film_title,f.date as reservation_date,f.time as reservation_time,
                         h.id as hall_id,h.name as hall_name,s.num as seat_num,
                         u.fname as first_name, u.lname as last_name FROM reservations r
                         JOIN films f ON r.film_id = f.id
                         JOIN halls h ON f.hall_id = h.id
                         JOIN seats s ON s.reservation_id = r.id
-                        JOIN users u ON u.key = r.user_key;";
+                        JOIN users u ON u.key = r.user_key
+						WHERE (f.date >= (SELECT CURRENT_DATE))";
+            $this->db->query($query);
+            $result = $this->db->resultSet();
+            return $result;
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+    }
+
+    public function getAllReservations()
+    {
+        try {
+            $query = "SELECT r.id,r.user_key as user_key, r.film_id as film_id,
+                        f.title as film_title,f.date as reservation_date,
+						f.time as reservation_time,h.id as hall_id,h.name as hall_name,
+                        u.fname as first_name, u.lname as last_name FROM reservations r
+                        JOIN films f ON r.film_id = f.id
+                        JOIN halls h ON f.hall_id = h.id
+                        JOIN users u ON u.key = r.user_key
+						WHERE (f.date >= (SELECT CURRENT_DATE))";
             $this->db->query($query);
             $result = $this->db->resultSet();
             return $result;
@@ -132,5 +152,11 @@ class Reservation extends Model
         } catch (PDOException $ex) {
             echo $ex->getMessage();
         }
+    }
+
+
+    public function deleteReservation($id)
+    {
+        return $this->delete($id);
     }
 }
