@@ -8,7 +8,7 @@ require_once 'vendor/autoload.php';
 class Authenticate extends Controller
 {
 
-    private $userKey;
+    private $userId;
     private $adminId;
     public $jwt;
     public $token;
@@ -38,7 +38,7 @@ class Authenticate extends Controller
                     $cookie = setcookie("key", $this->key, 0, '/', '', false, true);
 
                     if ($cookie) {
-                        echo json_encode(["message" => "Access allowed", "userKey" => $this->key, "cookie state" => $cookie]);
+                        echo json_encode(["message" => "Access allowed", "userId" => $this->userId, "cookie state" => $cookie]);
                     } else {
                         echo json_encode(["message" => "Failed to set cookie"]);
                     }
@@ -78,7 +78,7 @@ class Authenticate extends Controller
             $this->userModel->key = $data->key;
             $loggedInUser = $this->userModel->userLogin();
             if ($loggedInUser) {
-                $this->userKey = $loggedInUser->key;
+                $this->userId = $loggedInUser->id;
                 if (isset($_COOKIE["key"]) || isset($_COOKIE["jwt"])) {
                     $this->response += ["message" => "Already signed in"];
                     echo json_encode($this->response);
