@@ -16,7 +16,7 @@ class Reservation extends Model
         parent::__construct();
     }
 
-    public function getReservations()
+    public function getReservations($film_id)
     {
         try {
             $query = "SELECT r.id,r.user_key as user_key, r.film_id as film_id,
@@ -27,8 +27,10 @@ class Reservation extends Model
                         JOIN halls h ON f.hall_id = h.id
                         JOIN seats s ON s.reservation_id = r.id
                         JOIN users u ON u.key = r.user_key
-						WHERE (f.date >= (SELECT CURRENT_DATE))";
+						WHERE f.id = :film_id";
+
             $this->db->query($query);
+            $this->db->bind(":film_id", $film_id);
             $result = $this->db->resultSet();
             return $result;
         } catch (PDOException $ex) {
@@ -58,7 +60,7 @@ class Reservation extends Model
     public function add($data, $film_id)
     {
         try {
-            $reservations = $this->getReservations();
+            $reservations = $this->getReservations($film_id);
 
             $user = $this->findUserByEmail($data["email"]);
             foreach ($reservations as $reservation) {

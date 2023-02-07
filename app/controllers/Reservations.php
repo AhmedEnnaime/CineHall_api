@@ -66,6 +66,24 @@ class Reservations extends Controller
         }
     }
 
+    public function getReservations($film_id)
+    {
+        $this->response = [];
+        $result = $this->reservationModel->getReservations($film_id);
+
+        if ($result) {
+            $this->response += ["Reservations" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Reservations not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
+
     public function getReservationsCount()
     {
         $this->response = [];
