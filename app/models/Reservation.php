@@ -149,8 +149,18 @@ class Reservation extends Model
     public function getUserReservations($user_key)
     {
         try {
-            $query = "";
+            $query = "SELECT r.id,r.user_key as user_key, r.film_id as film_id,
+                        f.title as film_title,f.date as reservation_date,
+						f.time as reservation_time,h.id as hall_id,h.name as hall_name,
+                        u.fname as first_name, u.lname as last_name FROM reservations r
+                        JOIN films f ON r.film_id = f.id
+                        JOIN halls h ON f.hall_id = h.id
+                        JOIN users u ON u.key = r.user_key
+						WHERE r.user_key = :user_key";
             $this->db->query($query);
+            $this->db->bind(":user_key", $user_key);
+            $result = $this->db->resultSet();
+            return $result;
         } catch (PDOException $ex) {
             echo $ex->getMessage();
         }

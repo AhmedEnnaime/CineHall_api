@@ -135,4 +135,22 @@ class Reservations extends Controller
             exit;
         }
     }
+
+    public function getUserReservation($userKey)
+    {
+
+        $this->response = [];
+        $result = $this->reservationModel->getUserReservations($userKey);
+        if ($result) {
+            $this->response += ["Reservations" => $result];
+            http_response_code(200);
+            echo json_encode($this->response);
+            exit;
+        } else {
+            $this->response += ["message" => "Reservations not found"];
+            http_response_code(404);
+            echo json_encode($this->response);
+            exit;
+        }
+    }
 }
