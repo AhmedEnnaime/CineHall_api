@@ -91,17 +91,17 @@ class Users extends Controller
         }
     }
 
-    public function getLoggedInAdmin($id)
+    public function getLoggedInUser($id)
     {
         $this->response = [];
-        $result = $this->userModel->getLoggedInAdmin($id);
+        $result = $this->userModel->getLoggedInUser($id);
         if ($result) {
-            $this->response += ["Admin" => $result];
+            $this->response += ["User" => $result];
             http_response_code(200);
             echo json_encode($this->response);
             exit;
         } else {
-            $this->response += ["message" => "Admin not found"];
+            $this->response += ["message" => "User not found"];
             http_response_code(404);
             echo json_encode($this->response);
             exit;

@@ -108,17 +108,13 @@ class Authenticate extends Controller
 
     public function logout()
     {
-        if (isset($_COOKIE["jwt"]) || isset($_COOKIE["key"])) {
-            setcookie("jwt", $this->token, time() - 3600, '/', '', false, true);
-            setcookie("key", $this->token, time() - 3600, '/', '', false, true);
-            unset($_COOKIE["jwt"]);
-            unset($_COOKIE["key"]);
-            unset($_COOKIE);
-            echo json_encode("logged out successfully");
-            exit;
-        } else {
-            echo json_encode("Failed to logout");
-            exit;
-        }
+
+        setcookie("jwt", $this->token, time() - 3600, '/', '', false, true);
+        setcookie("key", $this->token, time() - 3600, '/', '', false, true);
+        unset($_COOKIE["jwt"]);
+        unset($_COOKIE["key"]);
+        unset($_COOKIE);
+        echo json_encode("logged out successfully");
+        exit;
     }
 }

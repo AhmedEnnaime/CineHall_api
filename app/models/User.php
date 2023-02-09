@@ -99,7 +99,7 @@ class User extends Model
         return $this->delete($id);
     }
 
-    public function getLoggedInAdmin($id)
+    public function getLoggedInUser($id)
     {
         try {
             $query = "SELECT * FROM " . $this->table . " WHERE id=:id";
