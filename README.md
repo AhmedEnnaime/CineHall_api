@@ -138,7 +138,7 @@ These are the api used in CineHall application, they're created with php with a 
 
 **Server:** PHP
 
-**Server:** MVC
+**Architecture:** MVC
 
 **Authentication:** JWT
 
